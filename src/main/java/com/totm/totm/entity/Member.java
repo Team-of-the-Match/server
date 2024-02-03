@@ -24,7 +24,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String nickname;
 
     @Column
@@ -47,30 +47,35 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     @JsonIgnore
-    List<Love> loves = new ArrayList<>();
+    List<Likes> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
     @JsonIgnore
     List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
     @JsonIgnore
     List<FootballScore> footballScores = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
     @JsonIgnore
     List<BaseballScore> baseballScores = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
     @JsonIgnore
     List<BasketballScore> basketballScores = new ArrayList<>();
 
-    public Member(String username, String password, String nickname, String name, String phoneNumber, MemberStatus memberStatus) {
+    public Member(String username, String password, String nickname, String name, String phoneNumber, Authority authority, MemberStatus memberStatus) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.name = name;
         this.phoneNumber = phoneNumber;
+        this.authority = authority;
+        this.memberStatus = memberStatus;
+    }
+
+    public void changeMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
     }
 }

@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +30,11 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PostStatus postStatus;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
     @JsonIgnore
-    private List<Love> loves = new ArrayList<>();
+    private List<Likes> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
     @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
