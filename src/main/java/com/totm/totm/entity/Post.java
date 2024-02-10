@@ -24,7 +24,7 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -38,4 +38,13 @@ public class Post extends BaseEntity {
     @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
+    public Post(String title, String content, PostStatus postStatus) {
+        this.title = title;
+        this.content = content;
+        this.postStatus = postStatus;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

@@ -17,9 +17,9 @@ public class BaseballScore extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column
+    @Column(nullable = false)
     private int year;
 
-    @Column
+    @Column(nullable = false)
     private int score;
 }

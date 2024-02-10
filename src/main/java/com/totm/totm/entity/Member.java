@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +28,10 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String nickname;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String phoneNumber;
 
     @Enumerated(value = EnumType.STRING)
@@ -38,8 +39,7 @@ public class Member extends BaseEntity {
 
     private LocalDate lastConnectedDate;
 
-    @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus;
+    private LocalDateTime stopDeadline;
 
     @OneToMany(mappedBy = "member")
     @JsonIgnore
@@ -65,17 +65,20 @@ public class Member extends BaseEntity {
     @JsonIgnore
     List<BasketballScore> basketballScores = new ArrayList<>();
 
-    public Member(String username, String password, String nickname, String name, String phoneNumber, Authority authority, MemberStatus memberStatus) {
+    public Member(String username, String password, String nickname, String name, String phoneNumber, Authority authority) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.authority = authority;
-        this.memberStatus = memberStatus;
     }
 
-    public void changeMemberStatus(MemberStatus memberStatus) {
-        this.memberStatus = memberStatus;
+    public void changeStopDeadline(LocalDateTime stopDeadline) {
+        this.stopDeadline = stopDeadline;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 }
