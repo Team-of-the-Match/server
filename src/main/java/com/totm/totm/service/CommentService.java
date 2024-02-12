@@ -56,9 +56,6 @@ public class CommentService {
         } else throw new CommentNotFoundException("해당 댓글을 찾을 수 없음");
     }
 
-    public void reportPost(Long id) {
-    }
-
     public Page<ReportedCommentResponseDto> findReportedComments(Pageable pageable) {
         return commentRepository.findReportedComments(CommentStatus.REPORTED, pageable)
                 .map(ReportedCommentResponseDto::new);
