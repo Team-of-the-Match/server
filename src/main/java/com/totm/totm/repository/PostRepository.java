@@ -10,6 +10,12 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
+    @Query("select p from Post p left join fetch p.member order by p.createdDate desc")
+    Page<Post> findPosts(Pageable pageable);
+
+    @Query("select p from Post p left join fetch p.member m where m.id = :id order by p.createdDate desc")
+    Page<Post> findPostsByMemberId(Long id, Pageable pageable);
+
     @Query("select p from Post p left join fetch p.member m where p.postStatus = :postStatus order by p.lastModifiedDate asc")
     Page<Post> findReportedPosts(PostStatus postStatus, Pageable pageable);
 

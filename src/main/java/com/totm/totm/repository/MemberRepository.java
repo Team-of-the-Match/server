@@ -11,9 +11,6 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    // 로그인
-    Optional<Member> findByUsernameAndPasswordAndAuthority(String username, String password, Authority authority);
-
     // 계정 조회
     Page<Member> findMembersByNicknameContainingAndAuthority(String nickname, Authority authority, Pageable pageable);
 
@@ -21,6 +18,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByUsernameAndAuthority(String username, Authority authority);
 
+    Optional<Member> findByNicknameAndAuthority(String nickname, Authority authority);
+
+    Optional<Member> findByPhoneNumberAndAuthority(String phoneNumber, Authority authority);
+
     Integer countMembersByLastConnectedDateAndAuthority(LocalDate date, Authority authority);
 
+    Optional<Member> findUsernameByNameAndPhoneNumberAndAuthority(String name, String phoneNumber, Authority authority);
+
+    Optional<Member> findMemberByUsernameAndNameAndPhoneNumberAndAuthority(String username, String name, String PhoneNumber, Authority authority);
 }

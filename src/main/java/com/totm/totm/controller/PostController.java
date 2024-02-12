@@ -18,22 +18,45 @@ public class PostController {
 
     private final PostService postService;
 
+    @PostMapping("/add")
+    public ResponseEntity addPost(@Valid @RequestBody AddPostRequestDto post) {
+        postService.addPost(post);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).build());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).build());
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity findPosts(Pageable pageable) {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).data(postService.findPosts(pageable)).build());
+    }
+
+    @GetMapping("/find/my/post")
+    public ResponseEntity findMyPosts(Long id, Pageable pageable) {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).data(postService.findMyPosts(id, pageable)).build());
+    }
+
     @GetMapping("/reported")
     public ResponseEntity findReportedPosts(Pageable pageable) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
                         .body(NormalResponse.builder().status(200).data(postService.findReportedPosts(pageable)).build());
     }
 
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
-        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).data("success").build());
+    @PatchMapping("/report/{id}")
+    public ResponseEntity reportPost(@PathVariable Long id) {
+        postService.reportPost(id);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).build());
     }
 
-    @PostMapping("/add")
-    public ResponseEntity addPost(@Valid @RequestBody AddPostRequestDto post) {
-        postService.addPost(post);
-        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).data("success").build());
+    @PatchMapping("/modify/{id}")
+    public ResponseEntity modifyPost(@PathVariable Long id, @Valid @RequestBody ModifyPostRequestDto request) {
+        postService.modifyPost(id, request);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).build());
     }
-
 }

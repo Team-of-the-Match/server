@@ -25,6 +25,43 @@ public class PostDto {
     }
 
     @Data
+    public static class ModifyPostRequestDto {
+
+        @NotBlank(message = "제목을 입력해야합니다.")
+        @Length(max = 30, message = "제목은 30자를 초과할 수 없습니다.")
+        private String title;
+
+        @NotBlank(message = "내용을 입력해야합니다.")
+        private String content;
+    }
+
+    @Data
+    public static class PostsResponseDto {
+        private Long postId;
+        private Long memberId;
+        private String nickname;
+        private String title;
+        private int likeNum;
+        private int commentNum;
+        private LocalDateTime createdDate;
+
+        public PostsResponseDto(Post post) {
+            this.postId = post.getId();
+            if(post.getMember() == null) {
+                this.memberId = null;
+                this.nickname = null;
+            } else {
+                this.memberId = post.getMember().getId();
+                this.nickname = post.getMember().getNickname();
+            }
+            this.title = post.getTitle();
+            this.likeNum = post.getLikeNum();
+            this.commentNum = post.getCommentNum();
+            this.createdDate = post.getCreatedDate();
+        }
+    }
+
+    @Data
     public static class ReportedPostResponseDto {
 
         private Long postId;

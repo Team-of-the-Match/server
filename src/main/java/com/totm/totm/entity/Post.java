@@ -30,6 +30,12 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PostStatus postStatus;
 
+    @Column(nullable = false)
+    private int likeNum;
+
+    @Column(nullable = false)
+    private int commentNum;
+
     @OneToMany(mappedBy = "post", orphanRemoval = true)
     @JsonIgnore
     private List<Likes> likes = new ArrayList<>();
@@ -38,13 +44,41 @@ public class Post extends BaseEntity {
     @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
-    public Post(String title, String content, PostStatus postStatus) {
+    public Post(String title, String content, PostStatus postStatus, int likeNum, int commentNum) {
         this.title = title;
         this.content = content;
         this.postStatus = postStatus;
+        this.likeNum = 0;
+        this.commentNum = 0;
     }
 
     public void setMember(Member member) {
         this.member = member;
+        member.getPosts().add(this);
+    }
+
+    public void reportPost() {
+        this.postStatus = PostStatus.REPORTED;
+    }
+
+    public void modifyPost(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public int increaseLike() {
+        return ++this.likeNum;
+    }
+
+    public int decreaseLike() {
+        return --this.likeNum;
+    }
+
+    public void increaseComment() {
+        this.commentNum++;
+    }
+
+    public void decreaseComment() {
+        this.commentNum--;
     }
 }

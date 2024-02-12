@@ -26,4 +26,20 @@ public class Comment extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private CommentStatus commentStatus;
+
+    public Comment(String comment, CommentStatus commentStatus) {
+        this.comment = comment;
+        this.commentStatus = commentStatus;
+    }
+
+    public void setMemberAndPost(Member member, Post post) {
+        this.member = member;
+        member.getComments().add(this);
+        this.post = post;
+        post.getComments().add(this);
+    }
+
+    public void reportComment() {
+        this.commentStatus = CommentStatus.REPORTED;
+    }
 }

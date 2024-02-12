@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,5 +40,35 @@ public class ScoreController {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).data(scoreService.getBasketballRanking(year, pageable)).build());
+    }
+
+    @GetMapping("/football/my")
+    public ResponseEntity getMyFootballRanking(Long id, int year) {
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder()
+                        .status(200)
+                        .data(scoreService.getMyFootballRanking(id, year))
+                        .build());
+    }
+
+    @GetMapping("/baseball/my")
+    public ResponseEntity getMyBaseballRanking(Long id, int year) {
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder()
+                        .status(200)
+                        .data(scoreService.getMyBaseballRanking(id, year))
+                        .build());
+    }
+
+    @GetMapping("/basketball/my")
+    public ResponseEntity getMyBasketballRanking(Long id, int year) {
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder()
+                        .status(200)
+                        .data(scoreService.getMyBasketballRanking(id, year))
+                        .build());
     }
 }

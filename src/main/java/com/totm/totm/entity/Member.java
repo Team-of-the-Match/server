@@ -19,7 +19,7 @@ public class Member extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(updatable = false, nullable = false, unique = true)
+    @Column(updatable = false, nullable = false)
     private String username;
 
     @Column(nullable = false)
@@ -31,7 +31,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String phoneNumber;
 
     @Enumerated(value = EnumType.STRING)
@@ -80,5 +80,9 @@ public class Member extends BaseEntity {
 
     public void changePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

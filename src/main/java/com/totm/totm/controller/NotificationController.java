@@ -22,7 +22,7 @@ public class NotificationController {
     public ResponseEntity addNotification(@Valid @RequestBody AddNotificationRequestDto request) {
         notificationService.addNotification(request);
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data("success").build());
+                .body(NormalResponse.builder().status(200).build());
     }
 
     @GetMapping("/find")
@@ -41,6 +41,6 @@ public class NotificationController {
     public ResponseEntity modifyNotification(@PathVariable Long id, @Valid @RequestBody ModifyNotificationRequestDto request) {
         notificationService.modifyNotification(id, request);
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data("success").build());
+                .body(NormalResponse.builder().status(200).build());
     }
 }

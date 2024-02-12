@@ -5,6 +5,8 @@ import com.totm.totm.entity.Member;
 import com.totm.totm.exception.DuplicatedMemberException;
 import com.totm.totm.exception.MemberNotFoundException;
 import com.totm.totm.exception.PasswordsNotEqualException;
+import com.totm.totm.repository.CommentRepository;
+import com.totm.totm.repository.LikesRepository;
 import com.totm.totm.repository.MemberRepository;
 import com.totm.totm.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,15 +29,26 @@ import static com.totm.totm.dto.MemberDto.*;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final LikesRepository likesRepository;
     private final PasswordEncoder passwordEncoder;
 
-//    로그인 관련은 JWT 와 함께, 마지막 접속 날짜 갱신 필요
-//    @Transactional
-//    public MemberResponseDto loginManager(String username, String password) {
-//        Optional<Member> findMember = memberRepository.findByUsernameAndPasswordAndAuthority(username, password, Authority.MANAGER, MemberStatus.NORMAL);
-//
-//        MemberResponseDto
-//    }
+    public void loginUser(LoginRequestDto request) {
+        Optional<Member> findMember = memberRepository.findByUsernameAndAuthority(request.getUsername(), Authority.USER);
+        if(findMember.isPresent()) {
+            if(passwordEncoder.matches(request.getPassword(), findMember.get().getPassword())) return;
+            else throw new MemberNotFoundException("아이디 또는 비밀번호가 틀렸습니다.");
+        } else throw new MemberNotFoundException("아이디 또는 비밀번호가 틀렸습니다.");
+    }
+
+    public void loginManager(LoginRequestDto request) {
+        Optional<Member> findMember = memberRepository.findByUsernameAndAuthority(request.getUsername(), Authority.MANAGER);
+        if(findMember.isPresent()) {
+            if(passwordEncoder.matches(request.getPassword(), findMember.get().getPassword())) return;
+            else throw new MemberNotFoundException("아이디 또는 비밀번호가 틀렸습니다.");
+        } else throw new MemberNotFoundException("아이디 또는 비밀번호가 틀렸습니다.");
+    }
 
     // 고객 계정 조회
     public Page<UserResponseDto> findUser(String nickname, Pageable pageable) {
@@ -58,11 +71,20 @@ public class MemberService {
         return memberRepository.findMembersByNameContainingAndAuthority(name, Authority.MANAGER, pageable).map(ManagerResponseDto::new);
     }
 
+    @Transactional
+    public void addUser(AddUserRequestDto request) {
+        if(duplicatedUsername(request.getUsername(), Authority.USER)) throw new DuplicatedMemberException("중복된 회원 존재");
+        if(duplicatedNickname(request.getNickname(), Authority.USER)) throw new DuplicatedMemberException("중복된 닉네임 존재");
+        if(duplicatedPhoneNumber(request.getPhoneNumber(), Authority.USER)) throw new DuplicatedMemberException("중복된 전화번호 존재");
+        Member member = new Member(request.getUsername(), passwordEncoder.encode(request.getPassword()), request.getNickname(), request.getName(), request.getPhoneNumber(), Authority.USER);
+        memberRepository.save(member);
+    }
+
     // 관리자 계정 추가
     @Transactional
-    public void addManager(AddManagerRequestDto manager) throws DuplicatedMemberException {
-        if(duplicated(manager.getUsername(), Authority.MANAGER)) throw new DuplicatedMemberException("중복된 회원 존재");
-        Member member = new Member(manager.getUsername(), passwordEncoder.encode(manager.getPassword()), null, manager.getName(), manager.getPhoneNumber(), Authority.MANAGER);
+    public void addManager(AddManagerRequestDto request) throws DuplicatedMemberException {
+        if(duplicatedUsername(request.getUsername(), Authority.MANAGER)) throw new DuplicatedMemberException("중복된 회원 존재");
+        Member member = new Member(request.getUsername(), passwordEncoder.encode(request.getPassword()), null, request.getName(), request.getPhoneNumber(), Authority.MANAGER);
         memberRepository.save(member);
     }
 
@@ -71,8 +93,18 @@ public class MemberService {
         memberRepository.deleteById(id);
     }
 
-    public boolean duplicated(String username, Authority authority) {
+    public boolean duplicatedUsername(String username, Authority authority) {
         Optional<Member> member = memberRepository.findByUsernameAndAuthority(username, authority);
+        return member.isPresent();
+    }
+
+    public boolean duplicatedNickname(String nickname, Authority authority) {
+        Optional<Member> member = memberRepository.findByNicknameAndAuthority(nickname, authority);
+        return member.isPresent();
+    }
+
+    public boolean duplicatedPhoneNumber(String phoneNumber, Authority authority) {
+        Optional<Member> member = memberRepository.findByPhoneNumberAndAuthority(phoneNumber, authority);
         return member.isPresent();
     }
 
@@ -98,5 +130,36 @@ public class MemberService {
             else throw new PasswordsNotEqualException("기존 비밀번호가 틀렸습니다.");
         }
         else throw new MemberNotFoundException("해당 멤버를 찾을 수 없음");
+    }
+
+    public String findUsername(FindUsernameRequestDto request) {
+        Optional<Member> findMember = memberRepository.findUsernameByNameAndPhoneNumberAndAuthority(request.getName(), request.getPhoneNumber(), Authority.USER);
+        if(findMember.isPresent()) {
+            return findMember.get().getUsername();
+        } else throw new MemberNotFoundException("해당 멤버를 찾을 수 없음");
+    }
+
+    @Transactional
+    public void resetNewPassword(ResetNewPasswordRequestDto request) {
+        Optional<Member> findMember = memberRepository.findMemberByUsernameAndNameAndPhoneNumberAndAuthority(request.getUsername(), request.getName(), request.getPhoneNumber(), Authority.USER);
+        if(findMember.isPresent()) {
+            findMember.get().changePassword(passwordEncoder.encode(request.getPassword()));
+        } else throw new MemberNotFoundException("해당 멤버를 찾을 수 없음");
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        postRepository.bulkPostMember(id);
+        commentRepository.bulkCommentMember(id);
+        likesRepository.bulkLikesMember(id);
+        memberRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void changePhoneNumber(Long id, ChangePhoneNumberRequestDto request) {
+        Optional<Member> findMember = memberRepository.findById(id);
+        if(findMember.isPresent()) {
+            findMember.get().changePhoneNumber(request.getPhoneNumber());
+        } else throw new MemberNotFoundException("해당 멤버를 찾을 수 없음");
     }
 }
