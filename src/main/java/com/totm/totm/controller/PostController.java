@@ -42,6 +42,12 @@ public class PostController {
                 .body(NormalResponse.builder().status(200).data(postService.findMyPosts(id, pageable)).build());
     }
 
+    @GetMapping("/find/liked/post")
+    public ResponseEntity findLikedPosts(Long id, Pageable pageable) {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).data(postService.findLikedPosts(id, pageable)).build());
+    }
+
     @GetMapping("/reported")
     public ResponseEntity findReportedPosts(Pageable pageable) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200))

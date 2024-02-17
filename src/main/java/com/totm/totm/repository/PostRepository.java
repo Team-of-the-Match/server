@@ -1,5 +1,6 @@
 package com.totm.totm.repository;
 
+import com.totm.totm.entity.Likes;
 import com.totm.totm.entity.Post;
 import com.totm.totm.entity.PostStatus;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p from Post p left join fetch p.member m where m.id = :id order by p.createdDate desc")
     Page<Post> findPostsByMemberId(Long id, Pageable pageable);
+
+    @Query("select l from Likes l " +
+            "join fetch l.post p " +
+            "left join fetch p.member m where m.id = :id order by p.createdDate desc")
+    Page<Likes> findLikedPostsByMemberId(Long id, Pageable pageable);
 
     @Query("select p from Post p left join fetch p.member m where p.postStatus = :postStatus order by p.lastModifiedDate asc")
     Page<Post> findReportedPosts(PostStatus postStatus, Pageable pageable);

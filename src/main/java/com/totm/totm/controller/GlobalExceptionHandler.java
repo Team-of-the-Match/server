@@ -1,8 +1,7 @@
 package com.totm.totm.controller;
 
 import com.totm.totm.dto.ErrorResponse;
-import com.totm.totm.exception.DuplicatedMemberException;
-import com.totm.totm.exception.MemberNotFoundException;
+import com.totm.totm.exception.*;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -40,17 +39,39 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.builder().status(400).message(errors.get(0)).build());
     }
 
-    @ExceptionHandler({ MemberNotFoundException.class })
-    public ResponseEntity<ErrorResponse> handleMemberNotFoundException(MemberNotFoundException e) {
+    @ExceptionHandler({ PasswordNotEqualException.class })
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(401))
+                .body(ErrorResponse.builder().status(401).message(e.getMessage()).build());
+    }
+
+    @ExceptionHandler({ MemberNotFoundException.class, CommentNotFoundException.class, NotificationNotFoundException.class,
+                        PostNotFoundException.class, ScoreNotFoundException.class, ManagerNotFoundException.class })
+    public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(404))
                 .body(ErrorResponse.builder().status(404).message(e.getMessage()).build());
     }
 
-    @ExceptionHandler(DuplicatedMemberException.class)
-    public ResponseEntity<ErrorResponse> handlerDuplicatedMemberException(DuplicatedMemberException e) {
+    @ExceptionHandler({ AlreadyLikedException.class, NeverLikedException.class })
+    public ResponseEntity<ErrorResponse> handleNotAcceptableException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(406))
+                .body(ErrorResponse.builder().status(406).message(e.getMessage()).build());
+    }
+
+    @ExceptionHandler({ DuplicatedMemberException.class, DuplicatedEmailException.class, DuplicatedUsernameException.class })
+    public ResponseEntity<ErrorResponse> handleConflictException(Exception e) {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(409))
                 .body(ErrorResponse.builder().status(409).message(e.getMessage()).build());
+    }
+
+    @ExceptionHandler({ MemberStopException.class })
+    public ResponseEntity<ErrorResponse> handleLockedException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(429))
+                .body(ErrorResponse.builder().status(429).message(e.getMessage()).build());
     }
 }

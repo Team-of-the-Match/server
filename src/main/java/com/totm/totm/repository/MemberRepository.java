@@ -1,6 +1,5 @@
 package com.totm.totm.repository;
 
-import com.totm.totm.entity.Authority;
 import com.totm.totm.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,20 +10,11 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    // 계정 조회
-    Page<Member> findMembersByNicknameContainingAndAuthority(String nickname, Authority authority, Pageable pageable);
+    Optional<Member> findByEmail(String email);
 
-    Page<Member> findMembersByNameContainingAndAuthority(String username, Authority authority, Pageable pageable);
+    Optional<Member> findByNickname(String nickname);
 
-    Optional<Member> findByUsernameAndAuthority(String username, Authority authority);
+    Page<Member> findMembersByNicknameContainsOrderByCreatedDateDesc(String nickname, Pageable pageable);
 
-    Optional<Member> findByNicknameAndAuthority(String nickname, Authority authority);
-
-    Optional<Member> findByPhoneNumberAndAuthority(String phoneNumber, Authority authority);
-
-    Integer countMembersByLastConnectedDateAndAuthority(LocalDate date, Authority authority);
-
-    Optional<Member> findUsernameByNameAndPhoneNumberAndAuthority(String name, String phoneNumber, Authority authority);
-
-    Optional<Member> findMemberByUsernameAndNameAndPhoneNumberAndAuthority(String username, String name, String PhoneNumber, Authority authority);
+    int countByLastConnectedDate(LocalDate localDate);
 }

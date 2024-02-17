@@ -55,6 +55,11 @@ public class PostService {
                 .map(PostsResponseDto::new);
     }
 
+    public Page<PostsResponseDto> findLikedPosts(Long id, Pageable pageable) {
+        return postRepository.findLikedPostsByMemberId(id, pageable)
+                .map(PostsResponseDto::new);
+    }
+
     public Page<ReportedPostResponseDto> findReportedPosts(Pageable pageable) {
         return postRepository.findReportedPosts(PostStatus.REPORTED, pageable)
                 .map(ReportedPostResponseDto::new);

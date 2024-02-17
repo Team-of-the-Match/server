@@ -1,5 +1,6 @@
 package com.totm.totm.dto;
 
+import com.totm.totm.entity.Likes;
 import com.totm.totm.entity.Post;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -58,6 +59,21 @@ public class PostDto {
             this.likeNum = post.getLikeNum();
             this.commentNum = post.getCommentNum();
             this.createdDate = post.getCreatedDate();
+        }
+
+        public PostsResponseDto(Likes likes) {
+            this.postId = likes.getPost().getId();
+            if(likes.getPost().getMember() == null) {
+                this.memberId = null;
+                this.nickname = null;
+            } else {
+                this.memberId = likes.getPost().getMember().getId();
+                this.nickname = likes.getPost().getMember().getNickname();
+            }
+            this.title = likes.getPost().getTitle();
+            this.likeNum = likes.getPost().getLikeNum();
+            this.commentNum = likes.getPost().getCommentNum();
+            this.createdDate = likes.getPost().getCreatedDate();
         }
     }
 

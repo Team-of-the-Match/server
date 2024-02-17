@@ -20,7 +20,7 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Column(updatable = false, nullable = false)
-    private String username;
+    private String email;
 
     @Column(nullable = false)
     private String password;
@@ -29,17 +29,11 @@ public class Member extends BaseEntity {
     private String nickname;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String phoneNumber;
-
-    @Enumerated(value = EnumType.STRING)
-    private Authority authority;
-
-    private LocalDate lastConnectedDate;
+    private boolean confirmed;
 
     private LocalDateTime stopDeadline;
+
+    private LocalDate lastConnectedDate;
 
     @OneToMany(mappedBy = "member")
     @JsonIgnore
@@ -65,24 +59,18 @@ public class Member extends BaseEntity {
     @JsonIgnore
     List<BasketballScore> basketballScores = new ArrayList<>();
 
-    public Member(String username, String password, String nickname, String name, String phoneNumber, Authority authority) {
-        this.username = username;
+    public Member(String email, String password, String nickname, boolean confirmed) {
+        this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.authority = authority;
+        this.confirmed = confirmed;
     }
 
-    public void changeStopDeadline(LocalDateTime stopDeadline) {
-        this.stopDeadline = stopDeadline;
+    public void stopMember() {
+        this.stopDeadline = LocalDateTime.now().plusDays(7L);
     }
 
     public void changePassword(String newPassword) {
         this.password = newPassword;
-    }
-
-    public void changePhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 }
