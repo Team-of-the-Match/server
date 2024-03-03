@@ -1,6 +1,7 @@
 package com.totm.totm.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.totm.totm.entity.score.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -59,6 +60,14 @@ public class Member extends BaseEntity {
     @JsonIgnore
     List<BasketballScore> basketballScores = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
+    @JsonIgnore
+    List<AbroadBasketballScore> abroadBasketballScores = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", orphanRemoval = true)
+    @JsonIgnore
+    List<AbroadFootballScore> abroadFootballScores = new ArrayList<>();
+
     public Member(String email, String password, String nickname, boolean confirmed) {
         this.email = email;
         this.password = password;
@@ -72,5 +81,9 @@ public class Member extends BaseEntity {
 
     public void changePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void setLastConnectedDateToday() {
+        this.lastConnectedDate = LocalDate.now();
     }
 }

@@ -1,5 +1,6 @@
 package com.totm.totm.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.totm.totm.entity.Notification;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -35,6 +36,7 @@ public class NotificationDto {
 
         private Long id;
         private String title;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDate;
 
         public NotificationsResponseDto(Notification notification) {
@@ -50,6 +52,7 @@ public class NotificationDto {
         private Long id;
         private String title;
         private String content;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDate;
 
         public NotificationResponseDto(Notification notification) {

@@ -1,5 +1,6 @@
 package com.totm.totm.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.totm.totm.entity.Manager;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -58,6 +59,7 @@ public class ManagerDto {
         private String username;
         private String name;
         private String phoneNumber;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDate;
 
         public FindManagersResponseDto(Manager manager) {

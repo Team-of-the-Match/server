@@ -1,5 +1,7 @@
-package com.totm.totm.entity;
+package com.totm.totm.entity.score;
 
+import com.totm.totm.entity.BaseEntity;
+import com.totm.totm.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class BaseballScore extends BaseEntity {
+public class BasketballScore extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,4 +24,15 @@ public class BaseballScore extends BaseEntity {
 
     @Column(nullable = false)
     private int score;
+
+    @Version
+    @Column
+    private Long version;
+
+    public BasketballScore(Member member, int year, int score) {
+        this.member = member;
+        this.year = year;
+        this.score = score;
+        member.getBasketballScores().add(this);
+    }
 }

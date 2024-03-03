@@ -60,6 +60,12 @@ public class PostController {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).build());
     }
 
+    @PatchMapping("/normalize/{id}")
+    public ResponseEntity normalizePost(@PathVariable Long id) {
+        postService.normalizePost(id);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).build());
+    }
+
     @PatchMapping("/modify/{id}")
     public ResponseEntity modifyPost(@PathVariable Long id, @Valid @RequestBody ModifyPostRequestDto request) {
         postService.modifyPost(id, request);

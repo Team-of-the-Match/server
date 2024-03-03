@@ -47,14 +47,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ MemberNotFoundException.class, CommentNotFoundException.class, NotificationNotFoundException.class,
-                        PostNotFoundException.class, ScoreNotFoundException.class, ManagerNotFoundException.class })
+                        PostNotFoundException.class, ScoreNotFoundException.class, ManagerNotFoundException.class,
+                        GameNotFoundException.class, PredictionNotFoundException.class })
     public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(404))
                 .body(ErrorResponse.builder().status(404).message(e.getMessage()).build());
     }
 
-    @ExceptionHandler({ AlreadyLikedException.class, NeverLikedException.class })
+    @ExceptionHandler({ AlreadyLikedException.class, NeverLikedException.class, GameAlreadyExistException.class,
+                        PredictionAlreadyExistException.class, GameAlreadyClosedException.class, GameNotClosedException.class,
+                        ScoreAlreadyUpdatedException.class })
     public ResponseEntity<ErrorResponse> handleNotAcceptableException(Exception e) {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(406))

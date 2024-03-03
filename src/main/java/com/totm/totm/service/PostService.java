@@ -69,7 +69,15 @@ public class PostService {
     public void reportPost(Long id) {
         Optional<Post> findPost = postRepository.findById(id);
         if(findPost.isPresent()) {
-            findPost.get().reportPost();
+            findPost.get().changeStatus(PostStatus.REPORTED);
+        } else throw new PostNotFoundException("해당 게시글을 찾을 수 없습니다.");
+    }
+
+    @Transactional
+    public void normalizePost(Long id) {
+        Optional<Post> findPost = postRepository.findById(id);
+        if(findPost.isPresent()) {
+            findPost.get().changeStatus(PostStatus.NORMAL);
         } else throw new PostNotFoundException("해당 게시글을 찾을 수 없습니다.");
     }
 

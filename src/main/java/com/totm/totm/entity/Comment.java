@@ -39,7 +39,7 @@ public class Comment extends BaseEntity {
         post.getComments().add(this);
     }
 
-    public void reportComment() {
-        this.commentStatus = CommentStatus.REPORTED;
+    public void changeStatus(CommentStatus commentStatus) {
+        this.commentStatus = commentStatus;
     }
 }

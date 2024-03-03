@@ -18,14 +18,21 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @PostMapping("/add")
-    public ResponseEntity addNotification(@Valid @RequestBody AddNotificationRequestDto request) {
-        notificationService.addNotification(request);
+    @PostMapping("/post")
+    public ResponseEntity post(@Valid @RequestBody AddNotificationRequestDto request) {
+        notificationService.post(request);
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).build());
     }
 
-    @GetMapping("/find")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity delete(@PathVariable Long id) {
+        notificationService.delete(id);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).build());
+    }
+
+    @GetMapping("/notifications")
     public ResponseEntity findNotifications(Pageable pageable) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).data(notificationService.findNotifications(pageable)).build());

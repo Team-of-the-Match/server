@@ -1,5 +1,6 @@
 package com.totm.totm.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.totm.totm.entity.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -33,6 +34,8 @@ public class MemberDto {
         private String password;
 
         @NotBlank(message = "닉네임은 빈값일 수 없습니다.")
+        @Pattern(regexp = "^[가-힣a-zA-Z]+$", message = "올바른 닉네임 형식이 아닙니다.")
+        @Length(min = 2, max = 10, message = "닉네임은 최소 2자 이상, 10자 이하여야 합니다.")
         private String nickname;
     }
 
@@ -60,7 +63,9 @@ public class MemberDto {
         private Long id;
         private String email;
         private String nickname;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime stopDeadline;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDate;
 
         public FindMembersResponseDto(Member member) {

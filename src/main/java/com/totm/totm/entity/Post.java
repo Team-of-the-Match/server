@@ -48,8 +48,8 @@ public class Post extends BaseEntity {
         this.title = title;
         this.content = content;
         this.postStatus = postStatus;
-        this.likeNum = 0;
-        this.commentNum = 0;
+        this.likeNum = likeNum;
+        this.commentNum = commentNum;
     }
 
     public void setMember(Member member) {
@@ -57,8 +57,8 @@ public class Post extends BaseEntity {
         member.getPosts().add(this);
     }
 
-    public void reportPost() {
-        this.postStatus = PostStatus.REPORTED;
+    public void changeStatus(PostStatus postStatus) {
+        this.postStatus = postStatus;
     }
 
     public void modifyPost(String title, String content) {

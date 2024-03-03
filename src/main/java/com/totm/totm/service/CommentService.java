@@ -6,6 +6,7 @@ import com.totm.totm.entity.Member;
 import com.totm.totm.entity.Post;
 import com.totm.totm.exception.CommentNotFoundException;
 import com.totm.totm.exception.MemberNotFoundException;
+import com.totm.totm.exception.MemberStopException;
 import com.totm.totm.exception.PostNotFoundException;
 import com.totm.totm.repository.CommentRepository;
 import com.totm.totm.repository.MemberRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.totm.totm.dto.CommentDto.*;
@@ -34,6 +36,8 @@ public class CommentService {
     public void addComment(AddCommentRequestDto request) {
         Optional<Member> findMember = memberRepository.findById(request.getMemberId());
         if(findMember.isEmpty()) throw new MemberNotFoundException("해당 멤버를 찾을 수 없음");
+        if(LocalDateTime.now().isBefore(findMember.get().getStopDeadline()))
+            throw new MemberStopException("현재 계정이 정지 상태입니다. 정지 일주일 후 정지가 해제됩니다.");
         Optional<Post> findPost = postRepository.findById(request.getPostId());
         if(findPost.isEmpty()) throw new PostNotFoundException("해당 게시글을 찾을 수 없음");
 
@@ -52,7 +56,15 @@ public class CommentService {
     public void reportComment(Long id) {
         Optional<Comment> findComment = commentRepository.findById(id);
         if(findComment.isPresent()) {
-            findComment.get().reportComment();
+            findComment.get().changeStatus(CommentStatus.REPORTED);
+        } else throw new CommentNotFoundException("해당 댓글을 찾을 수 없음");
+    }
+
+    @Transactional
+    public void normalizeComment(Long id) {
+        Optional<Comment> findComment = commentRepository.findById(id);
+        if(findComment.isPresent()) {
+            findComment.get().changeStatus(CommentStatus.NORMAL);
         } else throw new CommentNotFoundException("해당 댓글을 찾을 수 없음");
     }
 
@@ -62,7 +74,11 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long id) {
-        commentRepository.deleteById(id);
+    public void deleteComment(DeleteCommentRequestDto request) {
+        Optional<Post> findPost = postRepository.findById(request.getPostId());
+        if(findPost.isEmpty()) throw new PostNotFoundException("해당 게시글을 찾을 수 없음");
+
+        commentRepository.deleteById(request.getCommentId());
+        findPost.get().decreaseComment();
     }
 }

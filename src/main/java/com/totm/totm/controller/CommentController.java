@@ -2,6 +2,7 @@ package com.totm.totm.controller;
 
 import com.totm.totm.dto.NormalResponse;
 import com.totm.totm.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
@@ -31,8 +32,15 @@ public class CommentController {
     }
     
     @PatchMapping("/report/{id}")
-    public ResponseEntity reportPost(@PathVariable Long id) {
+    public ResponseEntity reportComment(@PathVariable Long id) {
         commentService.reportComment(id);
+        return ResponseEntity.status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).build());
+    }
+
+    @PatchMapping("/normalize/{id}")
+    public ResponseEntity normalizeComment(@PathVariable Long id) {
+        commentService.normalizeComment(id);
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).build());
     }
@@ -43,9 +51,9 @@ public class CommentController {
                 .body(NormalResponse.builder().status(200).data(commentService.findReportedComments(pageable)).build());
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
+    @DeleteMapping("/delete")
+    public ResponseEntity deleteComment(@Valid @RequestBody DeleteCommentRequestDto request) {
+        commentService.deleteComment(request);
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).build());
     }

@@ -1,6 +1,7 @@
 package com.totm.totm.service;
 
 import com.totm.totm.entity.Member;
+import com.totm.totm.entity.score.*;
 import com.totm.totm.exception.DuplicatedEmailException;
 import com.totm.totm.exception.MemberNotFoundException;
 import com.totm.totm.exception.PasswordNotEqualException;
@@ -8,6 +9,7 @@ import com.totm.totm.repository.CommentRepository;
 import com.totm.totm.repository.LikesRepository;
 import com.totm.totm.repository.MemberRepository;
 import com.totm.totm.repository.PostRepository;
+import com.totm.totm.repository.score.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,12 +33,42 @@ public class MemberService {
     private final CommentRepository commentRepository;
     private final LikesRepository likesRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FootballScoreRepository footballScoreRepository;
+    private final BaseballScoreRepository baseballScoreRepository;
+    private final BasketballScoreRepository basketballScoreRepository;
+    private final AbroadFootballScoreRepository abroadFootballScoreRepository;
+    private final AbroadBasketballScoreRepository abroadBasketballScoreRepository;
 
+    @Transactional
     public void login(LoginRequestDto request) {
         Optional<Member> findMember = memberRepository.findByEmail(request.getEmail());
         if(findMember.isPresent()) {
             if(!passwordEncoder.matches(request.getPassword(), findMember.get().getPassword()))
                 throw new PasswordNotEqualException("이메일 또는 비밀번호가 틀렸습니다.");
+            if(findMember.get().getLastConnectedDate() == null) {
+                FootballScore footballScore = new FootballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                BaseballScore baseballScore = new BaseballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                BasketballScore basketballScore = new BasketballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                AbroadFootballScore abroadFootballScore = new AbroadFootballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                AbroadBasketballScore abroadBasketballScore = new AbroadBasketballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                footballScoreRepository.save(footballScore);
+                baseballScoreRepository.save(baseballScore);
+                basketballScoreRepository.save(basketballScore);
+                abroadFootballScoreRepository.save(abroadFootballScore);
+                abroadBasketballScoreRepository.save(abroadBasketballScore);
+            } else if(findMember.get().getLastConnectedDate().getYear() != LocalDate.now().getYear()) {
+                FootballScore footballScore = new FootballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                BaseballScore baseballScore = new BaseballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                BasketballScore basketballScore = new BasketballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                AbroadFootballScore abroadFootballScore = new AbroadFootballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                AbroadBasketballScore abroadBasketballScore = new AbroadBasketballScore(findMember.get(), LocalDate.now().getYear(), 0);
+                footballScoreRepository.save(footballScore);
+                baseballScoreRepository.save(baseballScore);
+                basketballScoreRepository.save(basketballScore);
+                abroadFootballScoreRepository.save(abroadFootballScore);
+                abroadBasketballScoreRepository.save(abroadBasketballScore);
+            }
+            findMember.get().setLastConnectedDateToday();
         } else throw new MemberNotFoundException("이메일 또는 비밀번호가 틀렸습니다.");
     }
 

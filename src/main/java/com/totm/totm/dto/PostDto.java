@@ -1,5 +1,6 @@
 package com.totm.totm.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.totm.totm.entity.Likes;
 import com.totm.totm.entity.Post;
 import jakarta.validation.constraints.NotBlank;
@@ -44,6 +45,7 @@ public class PostDto {
         private String title;
         private int likeNum;
         private int commentNum;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime createdDate;
 
         public PostsResponseDto(Post post) {
@@ -84,6 +86,7 @@ public class PostDto {
         private Long memberId;
         private String title;
         private String content;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
         private LocalDateTime lastModifiedDate;
         private String nickname;
 

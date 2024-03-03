@@ -17,7 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Optional;
 
-import static com.totm.totm.dto.LikesDto.*;
+import static com.totm.totm.dto.LikesDto.LikeRequestDto;
 
 @Service
 @Transactional(readOnly = true, rollbackFor = MethodArgumentNotValidException.class)
@@ -40,6 +40,7 @@ public class LikesService {
 
         Likes likes = new Likes(findMember.get(), findPost.get());
         likesRepository.save(likes);
+
         return findPost.get().increaseLike();
     }
 

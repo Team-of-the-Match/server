@@ -23,8 +23,12 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-    public void addNotification(AddNotificationRequestDto request) {
+    public void post(AddNotificationRequestDto request) {
         notificationRepository.save(new Notification(request.getTitle(), request.getContent()));
+    }
+
+    public void delete(Long id) {
+        notificationRepository.deleteById(id);
     }
 
     public Page<NotificationsResponseDto> findNotifications(Pageable pageable) {
