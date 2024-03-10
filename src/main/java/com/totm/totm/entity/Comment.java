@@ -21,7 +21,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Lob
     private String comment;
 
     @Enumerated(EnumType.STRING)

@@ -16,7 +16,7 @@ public class Notification extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Lob
     private String content;
 
     public Notification(String title, String content) {

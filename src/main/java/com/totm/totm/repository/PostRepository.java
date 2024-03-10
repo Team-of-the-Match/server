@@ -13,13 +13,13 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>, QPostRepository {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Post> findById(Long id);
 
-    @Query("select p from Post p left join fetch p.member order by p.createdDate desc")
-    Page<Post> findPosts(Pageable pageable);
+//    @Query("select p from Post p left join fetch p.member order by p.createdDate desc")
+//    Page<Post> findPosts(Pageable pageable);
 
     @Query("select p from Post p left join fetch p.member m where m.id = :id order by p.createdDate desc")
     Page<Post> findPostsByMemberId(Long id, Pageable pageable);

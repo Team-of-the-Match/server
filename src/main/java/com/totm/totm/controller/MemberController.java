@@ -2,6 +2,7 @@ package com.totm.totm.controller;
 
 import com.totm.totm.dto.NormalResponse;
 import com.totm.totm.service.MemberService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody LoginRequestDto request) {
+    public ResponseEntity login(@Valid @RequestBody LoginRequestDto request) throws MessagingException {
         memberService.login(request);
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(200))
@@ -92,5 +93,29 @@ public class MemberController {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).data(memberService.today()).build());
+    }
+
+    @PatchMapping("/confirmation-login")
+    public ResponseEntity confirmationForLogin(String email, String value) {
+        memberService.confirmationForLogin(email, value);
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).build());
+    }
+
+    @PatchMapping("/send-email")
+    public ResponseEntity sendEmail(String email) throws MessagingException {
+        memberService.sendEmail(email);
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).build());
+    }
+
+    @GetMapping("/confirmation-password")
+    public ResponseEntity confirmationForPassword(String email, String value) {
+        memberService.confirmationForPassword(email, value);
+        return ResponseEntity
+                .status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).build());
     }
 }

@@ -86,4 +86,8 @@ public class Member extends BaseEntity {
     public void setLastConnectedDateToday() {
         this.lastConnectedDate = LocalDate.now();
     }
+
+    public void confirm() {
+        this.confirmed = true;
+    }
 }

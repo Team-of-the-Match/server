@@ -4,12 +4,12 @@ import com.totm.totm.dto.NormalResponse;
 import com.totm.totm.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.totm.totm.dto.NotificationDto.*;
+import static com.totm.totm.dto.NotificationDto.AddNotificationRequestDto;
+import static com.totm.totm.dto.NotificationDto.ModifyNotificationRequestDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,9 +33,9 @@ public class NotificationController {
     }
 
     @GetMapping("/notifications")
-    public ResponseEntity findNotifications(Pageable pageable) {
+    public ResponseEntity findNotifications(@RequestParam(required = false) Long lastId) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(notificationService.findNotifications(pageable)).build());
+                .body(NormalResponse.builder().status(200).data(notificationService.findNotifications(lastId)).build());
     }
 
     @GetMapping("/get/{id}")

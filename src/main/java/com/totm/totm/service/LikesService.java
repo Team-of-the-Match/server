@@ -37,7 +37,6 @@ public class LikesService {
 
         if(likesRepository.existsLikesByMemberAndPost(findMember.get(), findPost.get()))
             throw new AlreadyLikedException("이미 좋아한 글입니다.");
-
         Likes likes = new Likes(findMember.get(), findPost.get());
         likesRepository.save(likes);
 

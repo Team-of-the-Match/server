@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.totm.totm.dto.PostDto.*;
 
@@ -45,9 +47,11 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public Page<PostsResponseDto> findPosts(Pageable pageable) {
-        return postRepository.findPosts(pageable)
-                .map(PostsResponseDto::new);
+    public List<PostsResponseDto> findPosts(Long lastId) {
+        return postRepository.findPosts(lastId)
+                .stream()
+                .map(PostsResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     public Page<PostsResponseDto> findMyPosts(Long id, Pageable pageable) {

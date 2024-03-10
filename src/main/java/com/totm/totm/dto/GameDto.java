@@ -1,11 +1,11 @@
 package com.totm.totm.dto;
 
+import com.totm.totm.entity.AbroadFootballGame;
 import com.totm.totm.entity.FootballGame;
 import com.totm.totm.entity.Match;
 import com.totm.totm.entity.Result;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -39,8 +39,17 @@ public class GameDto {
         private boolean closed;
         private boolean scoreUpdated;
 
-        @Builder
         public GameResponseDto(FootballGame game) {
+            this.id = game.getId();
+            this.gameDate = game.getGameDate();
+            this.matches = game.getMatches().stream()
+                    .map(MatchResponseDto::new)
+                    .collect(Collectors.toList());
+            this.closed = game.isClosed();
+            this.scoreUpdated = game.isScoreUpdated();
+        }
+
+        public GameResponseDto(AbroadFootballGame game) {
             this.id = game.getId();
             this.gameDate = game.getGameDate();
             this.matches = game.getMatches().stream()

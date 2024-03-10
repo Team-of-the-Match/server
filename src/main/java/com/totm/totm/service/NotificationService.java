@@ -4,13 +4,13 @@ import com.totm.totm.entity.Notification;
 import com.totm.totm.exception.NotificationNotFoundException;
 import com.totm.totm.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.totm.totm.dto.NotificationDto.*;
 
@@ -31,9 +31,11 @@ public class NotificationService {
         notificationRepository.deleteById(id);
     }
 
-    public Page<NotificationsResponseDto> findNotifications(Pageable pageable) {
-        return notificationRepository.findNotifications(pageable)
-                .map(NotificationsResponseDto::new);
+    public List<NotificationsResponseDto> findNotifications(Long lastId) {
+        return notificationRepository.findNotifications(lastId)
+                .stream()
+                .map(NotificationsResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     public NotificationResponseDto getNotification(Long id) {

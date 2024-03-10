@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.totm.totm.dto.CommentDto.*;
 
@@ -36,8 +38,9 @@ public class CommentService {
     public void addComment(AddCommentRequestDto request) {
         Optional<Member> findMember = memberRepository.findById(request.getMemberId());
         if(findMember.isEmpty()) throw new MemberNotFoundException("해당 멤버를 찾을 수 없음");
-        if(LocalDateTime.now().isBefore(findMember.get().getStopDeadline()))
-            throw new MemberStopException("현재 계정이 정지 상태입니다. 정지 일주일 후 정지가 해제됩니다.");
+        if(findMember.get().getStopDeadline() != null)
+            if(LocalDateTime.now().isBefore(findMember.get().getStopDeadline()))
+                throw new MemberStopException("현재 계정이 정지 상태입니다. 정지 일주일 후 정지가 해제됩니다.");
         Optional<Post> findPost = postRepository.findById(request.getPostId());
         if(findPost.isEmpty()) throw new PostNotFoundException("해당 게시글을 찾을 수 없음");
 
@@ -47,9 +50,11 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    public Page<CommentResponseDto> findCommentsByPost(Long id, Pageable pageable) {
-        return commentRepository.findCommentsByPost(id, pageable)
-                .map(CommentResponseDto::new);
+    public List<CommentResponseDto> findCommentsByPost(Long id, Long lastCommentId) {
+        return commentRepository.findCommentsByPostId(id, lastCommentId)
+                .stream()
+                .map(CommentResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional

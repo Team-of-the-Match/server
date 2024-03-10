@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface FootballScoreRepository extends JpaRepository<FootballScore, Long> {
 
-    @Query("select fs from FootballScore fs where fs.year = :year and fs.member.id = :memberId")
+    @Query("select fs from FootballScore fs join fetch fs.member where fs.year = :year and fs.member.id = :memberId")
     Optional<FootballScore> findByYearAndMemberId(int year, Long memberId);
+
 }

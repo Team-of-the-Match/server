@@ -3,6 +3,7 @@ package com.totm.totm.service;
 import com.totm.totm.entity.FootballGame;
 import com.totm.totm.entity.FootballPrediction;
 import com.totm.totm.entity.Match;
+import com.totm.totm.entity.Ranking;
 import com.totm.totm.entity.score.FootballScore;
 import com.totm.totm.exception.*;
 import com.totm.totm.repository.FootballGameRepository;
@@ -13,13 +14,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.totm.totm.dto.GameDto.*;
@@ -32,6 +33,7 @@ public class FootballGameService {
     private final FootballGameRepository footballGameRepository;
     private final FootballPredictionRepository footballPredictionRepository;
     private final FootballScoreRepository footballScoreRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional(value = "mongoTransactionManager", rollbackFor = { MethodArgumentNotValidException.class })
     public void createGame(CreateGameRequestDto request) {
@@ -49,7 +51,7 @@ public class FootballGameService {
     public GameResponseDto findFootballGame(String date) {
         Optional<FootballGame> findFootballGames = footballGameRepository.findFootballGamesByGameDate(date);
         if(findFootballGames.isPresent()) {
-            return GameResponseDto.builder().game(findFootballGames.get()).build();
+            return new GameResponseDto(findFootballGames.get());
         } else throw new GameNotFoundException("해당 게임을 찾을 수 없습니다.");
     }
 
@@ -107,6 +109,12 @@ public class FootballGameService {
 
     @Transactional
     public void updateScores(String gameId) {
+        Optional<FootballGame> fg = footballGameRepository.findById(gameId);
+        if(fg.isEmpty()) throw new GameNotFoundException("해당 게임을 찾을 수 없습니다.");
+        if(!fg.get().isClosed()) throw new GameNotClosedException("해당 게임이 아직 닫히지 않았습니다.");
+        if(fg.get().isScoreUpdated()) throw new ScoreAlreadyUpdatedException("해당 게임에 대한 스코어가 이미 반영됐습니다.");
+        List<FootballPrediction> fps = footballPredictionRepository.findByFootballGame(fg.get());
+
         mongoTemplate.updateFirst(
                 Query.query(
                         Criteria.where("id").is(gameId)
@@ -115,17 +123,17 @@ public class FootballGameService {
                 FootballGame.class
         );
 
-        Optional<FootballGame> fg = footballGameRepository.findById(gameId);
-        if(fg.isEmpty()) throw new GameNotFoundException("해당 게임을 찾을 수 없습니다.");
-        if(!fg.get().isClosed()) throw new GameNotClosedException("해당 게임이 아직 닫히지 않았습니다.");
-        if(fg.get().isScoreUpdated()) throw new ScoreAlreadyUpdatedException("해당 게임에 대한 스코어가 이미 반영됐습니다.");
-        List<FootballPrediction> fps = footballPredictionRepository.findByFootballGame(fg.get());
-
+        Set<ZSetOperations.TypedTuple<Object>> tuples = new HashSet<>();
         for (FootballPrediction fp : fps) {
             Optional<FootballScore> fs = footballScoreRepository.findByYearAndMemberId(Integer.parseInt(fg.get().getGameDate().split("-")[0]), fp.getMemberId());
             if (fs.isEmpty()) continue;
-            fs.get().updateScore(fp.getScores().stream().mapToInt(s -> s).sum());
+            int sum = fp.getScores().stream().mapToInt(s -> s).sum();
+            fs.get().updateScore(sum);
+            tuples.add(ZSetOperations.TypedTuple.of(new Ranking(fs.get().getMember().getEmail(), fs.get().getMember().getNickname()), (double) fs.get().getScore()));
         }
+        redisTemplate.opsForZSet().add(
+                "football_" + Integer.parseInt(fg.get().getGameDate().split("-")[0]),
+                tuples);
     }
 
 }

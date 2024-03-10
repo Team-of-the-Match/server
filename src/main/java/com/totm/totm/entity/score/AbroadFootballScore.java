@@ -35,4 +35,8 @@ public class AbroadFootballScore extends BaseEntity {
         this.score = score;
         member.getAbroadFootballScores().add(this);
     }
+
+    public void updateScore(int sum) {
+        this.score += sum;
+    }
 }

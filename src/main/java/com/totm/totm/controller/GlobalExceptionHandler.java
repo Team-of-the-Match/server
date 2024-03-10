@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.builder().status(400).message(errors.get(0)).build());
     }
 
-    @ExceptionHandler({ PasswordNotEqualException.class })
+    @ExceptionHandler({ PasswordNotEqualException.class, ValueNotEqualException.class })
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(Exception e) {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(401))
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ AlreadyLikedException.class, NeverLikedException.class, GameAlreadyExistException.class,
                         PredictionAlreadyExistException.class, GameAlreadyClosedException.class, GameNotClosedException.class,
-                        ScoreAlreadyUpdatedException.class })
+                        ScoreAlreadyUpdatedException.class, MemberUnconfirmedException.class, ValueExpiredException.class })
     public ResponseEntity<ErrorResponse> handleNotAcceptableException(Exception e) {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(406))

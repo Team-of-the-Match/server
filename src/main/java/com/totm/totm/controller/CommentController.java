@@ -25,10 +25,10 @@ public class CommentController {
                 .body(NormalResponse.builder().status(200).build());
     }
 
-    @GetMapping("/find/{id}")
-    public ResponseEntity findCommentsByPost(@PathVariable Long id, Pageable pageable) {
+    @GetMapping("/comments")
+    public ResponseEntity findCommentsByPost(Long postId, @RequestParam(required = false) Long lastCommentId) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(commentService.findCommentsByPost(id, pageable)).build());
+                .body(NormalResponse.builder().status(200).data(commentService.findCommentsByPost(postId, lastCommentId)).build());
     }
     
     @PatchMapping("/report/{id}")

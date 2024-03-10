@@ -30,19 +30,19 @@ public class PostController {
         return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(NormalResponse.builder().status(200).build());
     }
 
-    @GetMapping("/find")
-    public ResponseEntity findPosts(Pageable pageable) {
+    @GetMapping("/posts")
+    public ResponseEntity findPosts(@RequestParam(required = false) Long lastId) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(postService.findPosts(pageable)).build());
+                .body(NormalResponse.builder().status(200).data(postService.findPosts(lastId)).build());
     }
 
-    @GetMapping("/find/my/post")
+    @GetMapping("/my-post")
     public ResponseEntity findMyPosts(Long id, Pageable pageable) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).data(postService.findMyPosts(id, pageable)).build());
     }
 
-    @GetMapping("/find/liked/post")
+    @GetMapping("/liked-posts")
     public ResponseEntity findLikedPosts(Long id, Pageable pageable) {
         return ResponseEntity.status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).data(postService.findLikedPosts(id, pageable)).build());

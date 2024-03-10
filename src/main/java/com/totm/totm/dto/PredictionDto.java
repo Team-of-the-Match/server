@@ -1,9 +1,6 @@
 package com.totm.totm.dto;
 
-import com.totm.totm.entity.FootballGame;
-import com.totm.totm.entity.FootballPrediction;
-import com.totm.totm.entity.Match;
-import com.totm.totm.entity.Prediction;
+import com.totm.totm.entity.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -40,6 +37,16 @@ public class PredictionDto {
                 this.predictions = fp.getPredictions();
             }
         }
+
+        public OpenGamePredictionResponseDto(AbroadFootballGame afg, AbroadFootballPrediction afp) {
+            this.gameId = afg.getId();
+            this.gameDate = afg.getGameDate();
+            this.matches = afg.getMatches().stream().map(OpenMatchResponseDto::new).collect(Collectors.toList());
+            if(afp != null) {
+                this.predictionId = afp.getId();
+                this.predictions = afp.getPredictions();
+            }
+        }
     }
 
     @Data
@@ -61,6 +68,15 @@ public class PredictionDto {
         private List<Integer> scores;
 
         public CloseGamePredictionResponseDto(FootballGame fg, FootballPrediction fp) {
+            this.gameId = fg.getId();
+            this.gameDate = fg.getGameDate();
+            this.matches = fg.getMatches().stream().map(CloseMatchResponseDto::new).collect(Collectors.toList());
+            this.predictionId = fp.getId();
+            this.predictions = fp.getPredictions();
+            this.scores = fp.getScores();
+        }
+
+        public CloseGamePredictionResponseDto(AbroadFootballGame fg, AbroadFootballPrediction fp) {
             this.gameId = fg.getId();
             this.gameDate = fg.getGameDate();
             this.matches = fg.getMatches().stream().map(CloseMatchResponseDto::new).collect(Collectors.toList());
