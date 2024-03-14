@@ -40,6 +40,13 @@ public class ManagerDto {
 
         @NotBlank(message = "전화번호는 빈값일 수 없습니다.")
         private String phoneNumber;
+
+        public AddManagerRequestDto(String username, String password, String name, String phoneNumber) {
+            this.username = username;
+            this.password = password;
+            this.name = name;
+            this.phoneNumber = phoneNumber;
+        }
     }
 
     @Data

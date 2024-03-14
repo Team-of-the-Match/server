@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ MemberNotFoundException.class, CommentNotFoundException.class, NotificationNotFoundException.class,
                         PostNotFoundException.class, ScoreNotFoundException.class, ManagerNotFoundException.class,
-                        GameNotFoundException.class, PredictionNotFoundException.class })
+                        GameNotFoundException.class, PredictionNotFoundException.class, TokenNotFoundException.class })
     public ResponseEntity<ErrorResponse> handleNotFoundException(Exception e) {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(404))

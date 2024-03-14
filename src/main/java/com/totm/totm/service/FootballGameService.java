@@ -1,26 +1,23 @@
 package com.totm.totm.service;
 
-import com.totm.totm.entity.FootballGame;
-import com.totm.totm.entity.FootballPrediction;
-import com.totm.totm.entity.Match;
-import com.totm.totm.entity.Ranking;
-import com.totm.totm.entity.score.FootballScore;
+import com.totm.totm.entity.*;
 import com.totm.totm.exception.*;
 import com.totm.totm.repository.FootballGameRepository;
 import com.totm.totm.repository.FootballPredictionRepository;
-import com.totm.totm.repository.score.FootballScoreRepository;
+import com.totm.totm.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.totm.totm.dto.GameDto.*;
@@ -30,9 +27,9 @@ import static com.totm.totm.dto.GameDto.*;
 public class FootballGameService {
 
     private final MongoTemplate mongoTemplate;
+    private final MemberRepository memberRepository;
     private final FootballGameRepository footballGameRepository;
     private final FootballPredictionRepository footballPredictionRepository;
-    private final FootballScoreRepository footballScoreRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional(value = "mongoTransactionManager", rollbackFor = { MethodArgumentNotValidException.class })
@@ -123,17 +120,18 @@ public class FootballGameService {
                 FootballGame.class
         );
 
-        Set<ZSetOperations.TypedTuple<Object>> tuples = new HashSet<>();
         for (FootballPrediction fp : fps) {
-            Optional<FootballScore> fs = footballScoreRepository.findByYearAndMemberId(Integer.parseInt(fg.get().getGameDate().split("-")[0]), fp.getMemberId());
-            if (fs.isEmpty()) continue;
             int sum = fp.getScores().stream().mapToInt(s -> s).sum();
-            fs.get().updateScore(sum);
-            tuples.add(ZSetOperations.TypedTuple.of(new Ranking(fs.get().getMember().getEmail(), fs.get().getMember().getNickname()), (double) fs.get().getScore()));
+
+            Optional<Member> m = memberRepository.findById(fp.getMemberId());
+            if(m.isEmpty()) continue;
+
+            redisTemplate.opsForZSet().incrementScore(
+                    "football_" + fg.get().getGameDate().split("-")[0],
+                    new Ranking(m.get().getEmail(), m.get().getNickname()),
+                    sum
+            );
         }
-        redisTemplate.opsForZSet().add(
-                "football_" + Integer.parseInt(fg.get().getGameDate().split("-")[0]),
-                tuples);
     }
 
 }

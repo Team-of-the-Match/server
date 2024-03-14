@@ -1,10 +1,13 @@
 package com.totm.totm.controller;
 
+import com.totm.totm.component.JwtTokenProvider;
 import com.totm.totm.dto.NormalResponse;
 import com.totm.totm.service.MemberService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +18,24 @@ import static com.totm.totm.dto.MemberDto.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
+@Slf4j
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login")
     public ResponseEntity login(@Valid @RequestBody LoginRequestDto request) throws MessagingException {
-        memberService.login(request);
+
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).build());
+                .body(NormalResponse.builder().status(200).data(memberService.login(request)).build());
+    }
+
+    @PatchMapping("/refresh")
+    public ResponseEntity refresh(String email, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).data(memberService.refresh(email, request)).build());
     }
 
     @PostMapping("/sign-up")
@@ -86,13 +97,6 @@ public class MemberController {
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(200))
                 .body(NormalResponse.builder().status(200).build());
-    }
-
-    @GetMapping("/today")
-    public ResponseEntity today() {
-        return ResponseEntity
-                .status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(memberService.today()).build());
     }
 
     @PatchMapping("/confirmation-login")

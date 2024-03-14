@@ -2,6 +2,7 @@ package com.totm.totm.controller;
 
 import com.totm.totm.dto.NormalResponse;
 import com.totm.totm.service.ManagerService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +21,15 @@ public class ManagerController {
 
     @PostMapping("/login")
     public ResponseEntity login(@Valid @RequestBody LoginRequestDto request) {
-        managerService.login(request);
         return ResponseEntity
                 .status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).build());
+                .body(NormalResponse.builder().status(200).data(managerService.login(request)).build());
+    }
+
+    @PatchMapping("/refresh")
+    public ResponseEntity refresh(String username, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatusCode.valueOf(200))
+                .body(NormalResponse.builder().status(200).data(managerService.refresh(username, request)).build());
     }
 
     @GetMapping("/managers")

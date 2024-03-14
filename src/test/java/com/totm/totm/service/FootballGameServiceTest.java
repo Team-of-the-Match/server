@@ -4,7 +4,6 @@ import com.totm.totm.entity.FootballGame;
 import com.totm.totm.entity.Match;
 import com.totm.totm.repository.FootballGameRepository;
 import com.totm.totm.repository.FootballPredictionRepository;
-import com.totm.totm.repository.score.FootballScoreRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,6 @@ class FootballGameServiceTest {
     FootballGameRepository footballGameRepository;
     @Autowired
     FootballPredictionRepository footballPredictionRepository;
-    @Autowired
-    FootballScoreRepository footballScoreRepository;
 
     @Test
     public void 트랜잭션_테스트() {

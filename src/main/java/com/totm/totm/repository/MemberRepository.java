@@ -15,6 +15,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByNickname(String nickname);
 
     Page<Member> findMembersByNicknameContainsOrderByCreatedDateDesc(String nickname, Pageable pageable);
-
-    int countByLastConnectedDate(LocalDate localDate);
 }
