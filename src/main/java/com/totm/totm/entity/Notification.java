@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -20,4 +18,14 @@ public class Notification extends BaseEntity {
 
     @Lob
     private String content;
+
+    public Notification(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public void modifyNotification(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

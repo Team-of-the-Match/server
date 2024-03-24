@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +18,8 @@ public class Member extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(updatable = false, nullable = false, unique = true)
-    private String username;
+    @Column(updatable = false, nullable = false)
+    private String email;
 
     @Column(nullable = false)
     private String password;
@@ -27,19 +27,10 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String nickname;
 
-    @Column
-    private String name;
+    @Column(nullable = false)
+    private boolean confirmed;
 
-    @Column(unique = true)
-    private String phoneNumber;
-
-    @Enumerated(value = EnumType.STRING)
-    private Authority authority;
-
-    private LocalDate lastConnectedDate;
-
-    @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus;
+    private LocalDateTime stopDeadline;
 
     @OneToMany(mappedBy = "member")
     @JsonIgnore
@@ -53,29 +44,22 @@ public class Member extends BaseEntity {
     @JsonIgnore
     List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", orphanRemoval = true)
-    @JsonIgnore
-    List<FootballScore> footballScores = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", orphanRemoval = true)
-    @JsonIgnore
-    List<BaseballScore> baseballScores = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", orphanRemoval = true)
-    @JsonIgnore
-    List<BasketballScore> basketballScores = new ArrayList<>();
-
-    public Member(String username, String password, String nickname, String name, String phoneNumber, Authority authority, MemberStatus memberStatus) {
-        this.username = username;
+    public Member(String email, String password, String nickname, boolean confirmed) {
+        this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.authority = authority;
-        this.memberStatus = memberStatus;
+        this.confirmed = confirmed;
     }
 
-    public void changeMemberStatus(MemberStatus memberStatus) {
-        this.memberStatus = memberStatus;
+    public void stopMember() {
+        this.stopDeadline = LocalDateTime.now().plusDays(7L);
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    public void confirm() {
+        this.confirmed = true;
     }
 }

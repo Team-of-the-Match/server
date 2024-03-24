@@ -1,73 +1,98 @@
 package com.totm.totm.controller;
 
-import com.totm.totm.dto.MemberDto;
-import com.totm.totm.dto.NormalResponse;
-import com.totm.totm.entity.Authority;
+import com.totm.totm.component.JwtTokenProvider;
 import com.totm.totm.service.MemberService;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.totm.totm.dto.MemberDto.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
-@ResponseBody
+@Slf4j
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    @GetMapping("/user/find")
-    public ResponseEntity findUser(@RequestParam("username") String username, Pageable pageable) {
-        Page<MemberDto.UserResponseDto> result = memberService.findUser(username, pageable);
-        return ResponseEntity
-                .status(200)
-                .body(NormalResponse.builder().status(200).data(result).build());
+    @PostMapping("/login")
+    public ResponseEntity login(@Valid @RequestBody LoginRequestDto request) throws MessagingException {
+
+        return ResponseEntity.ok(memberService.login(request));
     }
 
-    @GetMapping("/manager/find")
-    public ResponseEntity findManager(@RequestParam("name") String name, Pageable pageable) {
-        Page<MemberDto.ManagerResponseDto> result = memberService.findManager(name, pageable);
-        return ResponseEntity
-                .status(200)
-                .body(NormalResponse.builder().status(200).data(result).build());
+    @PatchMapping("/refresh")
+    public ResponseEntity refresh(String email, HttpServletRequest request) {
+        return ResponseEntity.ok(memberService.refresh(email, request));
     }
 
-    @PostMapping("/manager/add")
-    public ResponseEntity addManager(@Valid @RequestBody MemberDto.AddManagerRequestDto manager) {
-        memberService.addManager(manager);
-        return ResponseEntity
-                .status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data("success").build());
+    @PostMapping("/sign-up")
+    public ResponseEntity signUp(@Valid @RequestBody SignUpRequestDto request) {
+        memberService.signUp(request);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/manager/delete/{id}")
-    public ResponseEntity deleteManager(@PathVariable("id") Long id) {
-        memberService.deleteManager(id);
-        return ResponseEntity
-                .status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data("success").build());
+    @PatchMapping("/reset-password/{id}")
+    public ResponseEntity resetPassword(@PathVariable Long id, @Valid @RequestBody ResetPasswordRequestDto request) {
+        memberService.resetPassword(id, request);
+        return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/user/stop/{id}")
-    public ResponseEntity stopUser(@PathVariable("id") Long id) {
-        memberService.changeMemberStatusToStopOrNormal(id);
-        return new ResponseEntity<>("success", HttpStatus.OK);
+    @PatchMapping("/change-password/{id}")
+    public ResponseEntity changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDto request) {
+        memberService.changePassword(id, request);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/manager/duplicate")
-    public ResponseEntity managerDuplicated(@RequestParam("username") String username) {
-        System.out.println(username);
-        return ResponseEntity
-                .status(200)
-                .body(NormalResponse.builder()
-                        .status(200)
-                        .data(memberService.duplicated(username, Authority.MANAGER))
-                        .build());
+    @GetMapping("/duplicated-email")
+    public ResponseEntity duplicatedEmail(String email) {
+        return ResponseEntity.ok(memberService.duplicatedEmail(email));
     }
 
+    @GetMapping("/duplicated-nickname")
+    public ResponseEntity duplicatedNickname(String nickname) {
+        return ResponseEntity.ok(memberService.duplicatedNickname(nickname));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity delete(@PathVariable Long id) {
+        memberService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity findMembers(String nickname, Pageable pageable) {
+        return ResponseEntity.ok(memberService.findMembers(nickname, pageable));
+    }
+
+    @PatchMapping("/stop/{id}")
+    public ResponseEntity stopMember(@PathVariable Long id) {
+        memberService.stopMember(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/confirmation-login")
+    public ResponseEntity confirmationForLogin(String email, String value) {
+        memberService.confirmationForLogin(email, value);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/send-email")
+    public ResponseEntity sendEmail(String email) throws MessagingException {
+        memberService.sendEmail(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/confirmation-password")
+    public ResponseEntity confirmationForPassword(String email, String value) {
+        memberService.confirmationForPassword(email, value);
+        return ResponseEntity.ok().build();
+    }
 }

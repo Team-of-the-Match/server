@@ -20,4 +20,11 @@ public class Likes extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public Likes(Member member, Post post) {
+        this.member = member;
+        this.post = post;
+        post.getLikes().add(this);
+        member.getLikes().add(this);
+    }
 }
