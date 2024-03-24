@@ -1,10 +1,8 @@
 package com.totm.totm.controller;
 
-import com.totm.totm.dto.NormalResponse;
 import com.totm.totm.service.AbroadFootballPredictionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,21 +17,18 @@ public class AbroadFootballPredictionController {
 
     @GetMapping("/opened")
     public ResponseEntity findOpenedAbroadFootballPrediction(Long memberId, String gameDate) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(abroadFootballPredictionService.findOpened(memberId, gameDate)).build());
+        return ResponseEntity.ok(abroadFootballPredictionService.findOpened(memberId, gameDate));
     }
 
     @GetMapping("/closed")
     public ResponseEntity findClosedAbroadFootballPrediction(Long memberId, String gameDate) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(abroadFootballPredictionService.findClosed(memberId, gameDate)).build());
+        return ResponseEntity.ok(abroadFootballPredictionService.findClosed(memberId, gameDate));
     }
 
     @PostMapping("/predict")
     public ResponseEntity predict(@Valid @RequestBody PredictGameRequestDto request) {
         abroadFootballPredictionService.predict(request);
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).build());
+        return ResponseEntity.ok().build();
     }
 
 }

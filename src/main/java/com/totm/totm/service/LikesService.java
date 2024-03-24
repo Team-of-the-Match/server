@@ -11,6 +11,7 @@ import com.totm.totm.repository.LikesRepository;
 import com.totm.totm.repository.MemberRepository;
 import com.totm.totm.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,6 +28,7 @@ public class LikesService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final LikesRepository likesRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
     public int like(LikeRequestDto request) {
@@ -42,6 +44,36 @@ public class LikesService {
 
         return findPost.get().increaseLike();
     }
+
+//    @Transactional
+//    public int likeWithOptimisticLock(LikeRequestDto request) throws Exception {
+//        Optional<Member> findMember = memberRepository.findById(request.getMemberId());
+//        if(findMember.isEmpty()) throw new MemberNotFoundException("해당 멤버를 찾을 수 없음");
+//        Optional<Post> findPost = postRepository.findByIdWithOpt(request.getPostId());
+//        if(findPost.isEmpty()) throw new PostNotFoundException("해당 게시글을 찾을 수 없음");
+//
+//        if(likesRepository.existsLikesByMemberAndPost(findMember.get(), findPost.get()))
+//            throw new AlreadyLikedException("이미 좋아한 글입니다.");
+//        Likes likes = new Likes(findMember.get(), findPost.get());
+//        likesRepository.save(likes);
+//
+//        return findPost.get().increaseLike();
+//    }
+//
+//    @Transactional
+//    public void likeWithRedis(LikeRequestDto request) {
+//        Optional<Member> findMember = memberRepository.findById(request.getMemberId());
+//        if(findMember.isEmpty()) throw new MemberNotFoundException("해당 멤버를 찾을 수 없음");
+//        Optional<Post> findPost = postRepository.findByIdWithoutLock(request.getPostId());
+//        if(findPost.isEmpty()) throw new PostNotFoundException("해당 게시글을 찾을 수 없음");
+//
+//        if(likesRepository.existsLikesByMemberAndPost(findMember.get(), findPost.get()))
+//            throw new AlreadyLikedException("이미 좋아한 글입니다.");
+//        Likes likes = new Likes(findMember.get(), findPost.get());
+//        likesRepository.save(likes);
+//
+//        redisTemplate.opsForValue().increment(findPost.get().getId().toString(), 1);
+//    }
 
     @Transactional
     public int dislike(LikeRequestDto request) {

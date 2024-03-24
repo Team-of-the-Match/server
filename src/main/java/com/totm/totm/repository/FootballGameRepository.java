@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface FootballGameRepository extends MongoRepository<FootballGame, String> {
 
-    Optional<FootballGame> findFootballGamesByGameDate(String date);
+    Optional<FootballGame> findFootballGameByGameDate(String date);
 
     List<FootballGame> findFootballGamesByScoreUpdated(boolean scoreUpdated);
 

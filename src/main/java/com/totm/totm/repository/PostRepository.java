@@ -18,8 +18,12 @@ public interface PostRepository extends JpaRepository<Post, Long>, QPostReposito
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Post> findById(Long id);
 
-//    @Query("select p from Post p left join fetch p.member order by p.createdDate desc")
-//    Page<Post> findPosts(Pageable pageable);
+//    @Lock(LockModeType.OPTIMISTIC)
+//    @Query("select p from Post p where p.id = :id")
+//    Optional<Post> findByIdWithOpt(Long id);
+//
+//    @Query("select p from Post p where p.id = :id")
+//    Optional<Post> findByIdWithoutLock(Long id);
 
     @Query("select p from Post p left join fetch p.member m where m.id = :id order by p.createdDate desc")
     Page<Post> findPostsByMemberId(Long id, Pageable pageable);

@@ -34,7 +34,7 @@ public class FootballGameService {
 
     @Transactional(value = "mongoTransactionManager", rollbackFor = { MethodArgumentNotValidException.class })
     public void createGame(CreateGameRequestDto request) {
-        Optional<FootballGame> findFootballGame = footballGameRepository.findFootballGamesByGameDate(request.getGameDate());
+        Optional<FootballGame> findFootballGame = footballGameRepository.findFootballGameByGameDate(request.getGameDate());
         if(findFootballGame.isPresent()) throw new GameAlreadyExistException("해당 날짜의 경기가 이미 존재합니다.");
 
         List<Match> matches = new ArrayList<>();
@@ -46,7 +46,7 @@ public class FootballGameService {
     }
 
     public GameResponseDto findFootballGame(String date) {
-        Optional<FootballGame> findFootballGames = footballGameRepository.findFootballGamesByGameDate(date);
+        Optional<FootballGame> findFootballGames = footballGameRepository.findFootballGameByGameDate(date);
         if(findFootballGames.isPresent()) {
             return new GameResponseDto(findFootballGames.get());
         } else throw new GameNotFoundException("해당 게임을 찾을 수 없습니다.");
@@ -126,6 +126,8 @@ public class FootballGameService {
             Optional<Member> m = memberRepository.findById(fp.getMemberId());
             if(m.isEmpty()) continue;
 
+            if(fp.getMemberId() == 99L)
+                System.out.println("fp.getMemberId() = " + fp.getMemberId());
             redisTemplate.opsForZSet().incrementScore(
                     "football_" + fg.get().getGameDate().split("-")[0],
                     new Ranking(m.get().getEmail(), m.get().getNickname()),

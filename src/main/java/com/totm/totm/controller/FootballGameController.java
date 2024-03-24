@@ -1,10 +1,8 @@
 package com.totm.totm.controller;
 
-import com.totm.totm.dto.NormalResponse;
 import com.totm.totm.service.FootballGameService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,39 +19,33 @@ public class FootballGameController {
     @PostMapping("/create")
     public ResponseEntity createFootballGame(@Valid @RequestBody CreateGameRequestDto request) {
         footballGameService.createGame(request);
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).build());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/game")
     public ResponseEntity findFootballGame(String date) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(footballGameService.findFootballGame(date)).build());
+        return ResponseEntity.ok(footballGameService.findFootballGame(date));
     }
 
     @GetMapping("/opened-date")
     public ResponseEntity findOpenedDateFootballGame() {
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(footballGameService.findOpenedDateFootballGame()).build());
+        return ResponseEntity.ok(footballGameService.findOpenedDateFootballGame());
     }
 
     @GetMapping("/closed-date")
     public ResponseEntity findClosedDateFootballGame(String gameDate) {
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).data(footballGameService.findClosedDateFootballGame(gameDate)).build());
+        return ResponseEntity.ok(footballGameService.findClosedDateFootballGame(gameDate));
     }
 
     @PatchMapping("/close")
     public ResponseEntity closeFootballGame(@Valid @RequestBody CloseGameRequestDto request) {
         footballGameService.closeFootballGame(request);
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).build());
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/update-score")
     public ResponseEntity updateFootballScore(String gameId) {
         footballGameService.updateScores(gameId);
-        return ResponseEntity.status(HttpStatusCode.valueOf(200))
-                .body(NormalResponse.builder().status(200).build());
+        return ResponseEntity.ok().build();
     }
 }

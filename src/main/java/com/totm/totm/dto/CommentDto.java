@@ -24,10 +24,10 @@ public class CommentDto {
 
     @Data
     public static class DeleteCommentRequestDto {
-        @Min(value = 0, message = "댓글 아이디는 1보다 커야 합니다.")
+        @Min(value = 1, message = "댓글 아이디는 1보다 커야 합니다.")
         private Long commentId;
 
-        @Min(value = 0, message = "게시글 아이디는 1보다 커야 합니다.")
+        @Min(value = 1, message = "게시글 아이디는 1보다 커야 합니다.")
         private Long postId;
     }
 
